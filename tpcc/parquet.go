@@ -186,7 +186,7 @@ type Item struct {
 	I_id    int32  `parquet:"name=i_id, type=INT32"`
 	I_im_id int32  `parquet:"name=i_im_id, type=INT32"`
 	I_name  string `parquet:"name=i_name, type=UTF8, encoding=PLAIN_DICTIONARY"`
-	I_price string `parquet:"name=i_price, type=DECIMAL, scale=2, precision=5, basetype=BYTE_ARRAY"`
+	I_price int32  `parquet:"name=i_price, type=DECIMAL, scale=2, precision=5, basetype=INT32"`
 	I_data  string `parquet:"name=i_data, type=UTF8, encoding=PLAIN_DICTIONARY"`
 }
 
@@ -203,11 +203,11 @@ func (c *ParquetWorkLoader) loadItem(ctx context.Context) error {
 		s.Buf.Reset()
 
 		iImID := randInt(s.R, 1, 10000)
-		iPrice := float64(randInt(s.R, 100, 10000)) / 100
+		iPrice := int32(randInt(s.R, 100, 10000))
 		iName := randChars(s.R, s.Buf, 14, 24)
 		iData := randOriginalString(s.R, s.Buf)
 
-		v := &Item{int32(i + 1), int32(iImID), iName, fmt.Sprintf("%f", iPrice), iData}
+		v := &Item{int32(i + 1), int32(iImID), iName, iPrice, iData}
 		if err := l.InsertValue(ctx, v); err != nil {
 			return err
 		}
@@ -223,8 +223,8 @@ type Warehouse struct {
 	City    string `parquet:"name=w_city, type=UTF8"`
 	State   string `parquet:"name=w_state, type=UTF8"`
 	Zip     string `parquet:"name=w_zip, type=UTF8"`
-	Tax     string `parquet:"name=w_tax, type=UTF8"`
-	Ytd     string `parquet:"name=w_ytd, type=UTF8"`
+	Tax     int32  `parquet:"name=w_tax, type=DECIMAL, scale=4, precision=4, basetype=INT32"`
+	Ytd     int64  `parquet:"name=w_ytd, type=DECIMAL, scale=2, precision=12, basetype=INT64"`
 }
 
 func (c *ParquetWorkLoader) loadWarehouse(ctx context.Context, warehouse int) error {
@@ -240,10 +240,10 @@ func (c *ParquetWorkLoader) loadWarehouse(ctx context.Context, warehouse int) er
 	wCity := randChars(s.R, s.Buf, 10, 20)
 	wState := randState(s.R, s.Buf)
 	wZip := randZip(s.R, s.Buf)
-	wTax := randTax(s.R)
-	wYtd := 300000.00
+	wTax := int32(randTax(s.R) * 10000)
+	wYtd := int64(300000.00 * 100)
 
-	v := &Warehouse{int32(warehouse), wName, wStree1, wStree2, wCity, wState, wZip, fmt.Sprintf("%f", wTax), fmt.Sprintf("%f", wYtd)}
+	v := &Warehouse{int32(warehouse), wName, wStree1, wStree2, wCity, wState, wZip, wTax, wYtd}
 	if err := l.InsertValue(ctx, v); err != nil {
 		return err
 	}
@@ -321,8 +321,8 @@ type District struct {
 	City    string `parquet:"name=d_city, type=UTF8"`
 	State   string `parquet:"name=d_state, type=UTF8"`
 	Zip     string `parquet:"name=d_zip, type=UTF8"`
-	Tax     string `parquet:"name=d_tax, type=DECIMAL, scale=4, precision=4, basetype=BYTE_ARRAY"`
-	Ytd     string `parquet:"name=d_ytd, type=DECIMAL, scale=4, precision=12, basetype=BYTE_ARRAY"`
+	Tax     int32  `parquet:"name=d_tax, type=DECIMAL, scale=4, precision=4, basetype=INT32"`
+	Ytd     int64  `parquet:"name=d_ytd, type=DECIMAL, scale=2, precision=12, basetype=INT64"`
 	NextOId int32  `parquet:"name=d_next_o_id, type=INT32"`
 }
 
@@ -346,12 +346,12 @@ func (c *ParquetWorkLoader) loadDistrict(ctx context.Context, warehouse int) err
 		dCity := randChars(s.R, s.Buf, 10, 20)
 		dState := randState(s.R, s.Buf)
 		dZip := randZip(s.R, s.Buf)
-		dTax := randTax(s.R)
-		dYtd := 30000.00
+		dTax := int32(randTax(s.R) * 10000)
+		dYtd := 30000_00
 		dNextOID := 3001
 
 		v := &District{int32(dID), int32(dWID), dName, dStreet1, dStreet2, dCity, dState, dZip,
-			fmt.Sprintf("%f", dTax), fmt.Sprintf("%f", dYtd), int32(dNextOID)}
+			dTax, int64(dYtd), int32(dNextOID)}
 
 		if err := l.InsertValue(ctx, v); err != nil {
 			return err
@@ -376,10 +376,10 @@ type Customer struct {
 	Phone       string `parquet:"name=c_phone, type=UTF8, encoding=PLAIN"`
 	Since       int64  `parquet:"name=c_since, type=TIMESTAMP_MICROS"`
 	Credit      string `parquet:"name=c_credit, type=UTF8, encoding=PLAIN"`
-	CreditLim   int64  `parquet:"name=c_credit_lim, type=INT64"`
-	Discount    string `parquet:"name=c_discount, type=UTF8, encoding=PLAIN"`
-	Balance     int64  `parquet:"name=c_balance, type=INT64"`
-	YtdPayment  int64  `parquet:"name=c_ytd_payment, type=INT64"`
+	CreditLim   int64  `parquet:"name=c_credit_lim, type=DECIMAL, scale=2, precision=12, basetype=INT64"`
+	Discount    int32  `parquet:"name=c_discount, type=DECIMAL, scale=4, precision=4, basetype=INT32"`
+	Balance     int64  `parquet:"name=c_balance, type=DECIMAL, scale=2, precision=12, basetype=INT64"`
+	YtdPayment  int64  `parquet:"name=c_ytd_payment, type=DECIMAL, scale=2, precision=12, basetype=INT64"`
 	PaymentCnt  int32  `parquet:"name=c_payment_cnt, type=INT64"`
 	DeliveryCnt int32  `parquet:"name=c_delivery_cnt, type=INT32"`
 	Data        string `parquet:"name=c_data, type=UTF8, encoding=PLAIN"`
@@ -419,17 +419,17 @@ func (c *ParquetWorkLoader) loadCustomer(ctx context.Context, warehouse int, dis
 		if s.R.Intn(10) == 0 {
 			cCredit = "BC"
 		}
-		cCreditLim := 50000.00
-		cDisCount := float64(randInt(s.R, 0, 5000)) / float64(10000.0)
-		cBalance := -10.00
-		cYtdPayment := 10.00
+		cCreditLim := 50000.00 * 100
+		cDisCount := int32(randInt(s.R, 0, 5000))
+		cBalance := int64(-10 * 10000)
+		cYtdPayment := int64(10.00 * 10000)
 		cPaymentCnt := 1
 		cDeliveryCnt := 0
 		cData := randChars(s.R, s.Buf, 300, 500)
 
 		v := &Customer{int32(cID), int32(cDID), int32(cWID), cFirst, cMiddle, cLast, cStreet1, cStreet2, cCity, cState,
-			cZip, cPhone, cSince, cCredit, int64(cCreditLim), fmt.Sprintf("%f", cDisCount),
-			int64(cBalance), int64(cYtdPayment), int32(cPaymentCnt), int32(cDeliveryCnt), cData}
+			cZip, cPhone, cSince, cCredit, int64(cCreditLim), cDisCount,
+			cBalance, cYtdPayment, int32(cPaymentCnt), int32(cDeliveryCnt), cData}
 
 		if err := l.InsertValue(ctx, v); err != nil {
 			return err
@@ -446,7 +446,7 @@ type History struct {
 	DID    int32  `parquet:"name=h_d_id, type=INT32"`
 	WID    int32  `parquet:"name=h_w_id, type=INT32"`
 	Date   int64  `parquet:"name=h_date, type=TIMESTAMP_MICROS"`
-	Amount int32  `parquet:"name=h_amount, type=INT32"`
+	Amount int32  `parquet:"name=h_amount, type=DECIMAL, scale=2, precision=6, basetype=INT32"`
 	Data   string `parquet:"name=h_data, type=UTF8"`
 }
 
@@ -469,11 +469,11 @@ func (c *ParquetWorkLoader) loadHistory(ctx context.Context, warehouse int, dist
 		hDID := district
 		hWID := warehouse
 		hDate := c.initLoadTime
-		hAmount := 10.00
+		hAmount := int32(10.00 * 100)
 		hData := randChars(s.R, s.Buf, 12, 24)
 
 		v := &History{int32(hCID), int32(hCDID), int32(hCWID), int32(hDID), int32(hWID),
-			hDate, int32(hAmount), hData}
+			hDate, hAmount, hData}
 
 		if err := l.InsertValue(ctx, v); err != nil {
 			return err
@@ -572,7 +572,7 @@ type OrderLine struct {
 	SupplyWId int32  `parquet:"name=ol_supply_w_id, type=INT32"`
 	DeliveryD int64  `parquet:"name=ol_delivery_d, type=TIMESTAMP_MICROS"`
 	Quantity  int32  `parquet:"name=ol_quantity, type=INT32"`
-	Amount    string `parquet:"name=ol_amount, type=UTF8"`
+	Amount    *int32 `parquet:"name=ol_amount, type=DECIMAL, scale=2, precision=6, basetype=INT32"`
 	DistInfo  string `parquet:"name=ol_dist_info, type=UTF8"`
 }
 
@@ -599,17 +599,18 @@ func (c *ParquetWorkLoader) loadOrderLine(ctx context.Context, warehouse int,
 			olSupplyWID := warehouse
 			olQuantity := 5
 
-			var olAmount float64
+			var olAmount *int32
 			olDeliveryD := c.initLoadTime
 			if olOID < 2101 {
-				olAmount = 0.00
+				//olAmount = 0
 			} else {
-				olAmount = float64(randInt(s.R, 1, 999999)) / 100.0
+				amount := int32(randInt(s.R, 1, 999999))
+				olAmount = &amount
 			}
 			olDistInfo := randChars(s.R, s.Buf, 24, 24)
 
 			v := &OrderLine{int32(olOID), int32(olDID), int32(olWID), int32(olNumber), int32(olIID),
-				int32(olSupplyWID), olDeliveryD, int32(olQuantity), fmt.Sprintf("%f", olAmount), olDistInfo}
+				int32(olSupplyWID), olDeliveryD, int32(olQuantity), olAmount, olDistInfo}
 			if err := l.InsertValue(ctx, v); err != nil {
 				return err
 			}
