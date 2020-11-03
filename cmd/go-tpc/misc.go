@@ -11,7 +11,7 @@ import (
 
 func checkPrepare(ctx context.Context, w workload.Workloader) {
 	// skip preparation check in csv case
-	if w.Name() == "tpcc-csv" {
+	if w.Name() == "tpcc-csv" || w.Name() == "tpcc-parquet" {
 		fmt.Println("Skip preparing checking. Please load CSV data into database and check later.")
 		return
 	}

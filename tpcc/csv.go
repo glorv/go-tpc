@@ -92,7 +92,7 @@ func (c *CSVWorkLoader) InitThread(ctx context.Context, threadID int) context.Co
 		TpcState: workload.NewTpcState(ctx, c.db),
 	}
 
-	s.loaders = make(map[string]*load.CSVBatchLoader)
+	s.loaders = make(map[string]load.BatchLoader)
 	for k, v := range c.tables {
 		// table item only created at thread 0
 		if v && !(k == "item" && threadID != 0) {

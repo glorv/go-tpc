@@ -5,17 +5,16 @@ import (
 	"context"
 	"database/sql"
 	"encoding/csv"
+	"fmt"
+	"github.com/xitongsys/parquet-go-source/local"
+	"github.com/xitongsys/parquet-go/source"
+	"github.com/xitongsys/parquet-go/writer"
 	"os"
 )
 
 const (
 	maxBatchCount = 1024
 )
-
-type BatchLoader interface {
-	InsertValue(ctx context.Context, query []string) error
-	Flush(ctx context.Context) error
-}
 
 // SQLBatchLoader helps us insert in batch
 type SQLBatchLoader struct {
@@ -66,6 +65,13 @@ func (b *SQLBatchLoader) Flush(ctx context.Context) error {
 	return err
 }
 
+type BatchLoader interface {
+	Name() string
+	InsertValue(ctx context.Context, columns interface{}) error
+	Flush(ctx context.Context) error
+	Close(ctx context.Context) error
+}
+
 // CSVBatchLoader helps us insert in batch
 type CSVBatchLoader struct {
 	f      *os.File
@@ -80,9 +86,13 @@ func NewCSVBatchLoader(f *os.File) *CSVBatchLoader {
 	}
 }
 
+func (b *CSVBatchLoader) Name() string {
+	return "csv"
+}
+
 // InsertValue inserts a value, the loader may flush all pending values.
-func (b *CSVBatchLoader) InsertValue(ctx context.Context, columns []string) error {
-	return b.writer.Write(columns)
+func (b *CSVBatchLoader) InsertValue(ctx context.Context, columns interface{}) error {
+	return b.writer.Write(columns.([]string))
 }
 
 // Flush inserts all pending values
@@ -93,5 +103,55 @@ func (b *CSVBatchLoader) Flush(ctx context.Context) error {
 
 // Close closes the file.
 func (b *CSVBatchLoader) Close(ctx context.Context) error {
+	return b.f.Close()
+}
+
+type ParquetBatchLoader struct {
+	f source.ParquetFile
+	w *writer.ParquetWriter
+	name string
+	closed bool
+}
+
+func NewParquetBatchLoader(path string, o interface{}, name string) (BatchLoader, error) {
+	f, err := local.NewLocalFileWriter(path)
+	w, err :=  writer.NewParquetWriter(f, o, 4)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ParquetBatchLoader{
+		f: f,
+		w:w,
+		name: name,
+	}, nil
+}
+
+func (b *ParquetBatchLoader) Name() string {
+	return fmt.Sprintf("paquet-%s",b.name)
+}
+
+// InsertValue inserts a value, the loader may flush all pending values.
+func (b *ParquetBatchLoader) InsertValue(ctx context.Context, columns interface{}) error {
+	return b.w.Write(columns)
+}
+
+// Flush inserts all pending values
+func (b *ParquetBatchLoader) Flush(ctx context.Context) error {
+	err := b.w.Flush(false)
+	return err
+}
+
+// Close closes the file.
+func (b *ParquetBatchLoader) Close(ctx context.Context) error {
+	if b.closed {
+		return nil
+	}
+
+	err := b.w.WriteStop()
+	if err != nil {
+		return err
+	}
+	b.closed = true
 	return b.f.Close()
 }

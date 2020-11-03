@@ -41,6 +41,12 @@ func executeTpcc(action string) {
 			os.Exit(1)
 		}
 		w, err = tpcc.NewCSVWorkloader(globalDB, &tpccConfig)
+	case "parquet", "PARQUET":
+		if tpccConfig.OutputDir == "" {
+			fmt.Printf("Output Directory cannot be empty when generating files")
+			os.Exit(1)
+		}
+		w, err = tpcc.NewParquetWorkLoader(globalDB, &tpccConfig)
 	default:
 		w, err = tpcc.NewWorkloader(globalDB, &tpccConfig)
 	}

@@ -35,7 +35,7 @@ type tpccState struct {
 	*workload.TpcState
 	index   int
 	decks   []int
-	loaders map[string]*load.CSVBatchLoader
+	loaders map[string]load.BatchLoader
 
 	newOrderStmts    map[string]*sql.Stmt
 	orderStatusStmts map[string]*sql.Stmt
