@@ -182,13 +182,12 @@ func (c *ParquetWorkLoader) DBName() string {
 	return c.cfg.DBName
 }
 
-
 type Item struct {
-	I_id int32 `parquet:"name=i_id, type=INT32"`
-	I_im_id int32 `parquet:"name=i_im_id, type=INT32"`
-	I_name string `parquet:"name=i_name, type=UTF8, encoding=PLAIN_DICTIONARY"`
+	I_id    int32  `parquet:"name=i_id, type=INT32"`
+	I_im_id int32  `parquet:"name=i_im_id, type=INT32"`
+	I_name  string `parquet:"name=i_name, type=UTF8, encoding=PLAIN_DICTIONARY"`
 	I_price string `parquet:"name=i_price, type=DECIMAL, scale=2, precision=5, basetype=BYTE_ARRAY"`
-	I_data string `parquet:"name=i_data, type=UTF8, encoding=PLAIN_DICTIONARY"`
+	I_data  string `parquet:"name=i_data, type=UTF8, encoding=PLAIN_DICTIONARY"`
 }
 
 func (c *ParquetWorkLoader) loadItem(ctx context.Context) error {
@@ -217,15 +216,15 @@ func (c *ParquetWorkLoader) loadItem(ctx context.Context) error {
 }
 
 type Warehouse struct {
-	Id int32 `parquet:"name=w_id, type=INT32"`
-	Name string `parquet:"name=w_name, type=UTF8"`
+	Id      int32  `parquet:"name=w_id, type=INT32"`
+	Name    string `parquet:"name=w_name, type=UTF8"`
 	Street1 string `parquet:"name=w_street_1, type=UTF8"`
 	Street2 string `parquet:"name=w_street_2, type=UTF8"`
-	City string `parquet:"name=w_city, type=UTF8"`
-	State string `parquet:"name=w_state, type=UTF8"`
-	Zip string `parquet:"name=w_zip, type=UTF8"`
-	Tax string `parquet:"name=w_tax, type=UTF8"`
-	Ytd string `parquet:"name=w_ytd, type=UTF8"`
+	City    string `parquet:"name=w_city, type=UTF8"`
+	State   string `parquet:"name=w_state, type=UTF8"`
+	Zip     string `parquet:"name=w_zip, type=UTF8"`
+	Tax     string `parquet:"name=w_tax, type=UTF8"`
+	Ytd     string `parquet:"name=w_ytd, type=UTF8"`
 }
 
 func (c *ParquetWorkLoader) loadWarehouse(ctx context.Context, warehouse int) error {
@@ -253,23 +252,23 @@ func (c *ParquetWorkLoader) loadWarehouse(ctx context.Context, warehouse int) er
 }
 
 type Stock struct {
-	IId int32 `parquet:"name=s_i_id, type=INT32"`
-	WId int32 `parquet:"name=s_w_id, type=INT32"`
-	Quantity int32 `parquet:"name=s_quantity, type=INT32"`
-	Dist01 string `parquet:"name=s_dist_01, type=UTF8"`
-	Dist02 string `parquet:"name=s_dist_02, type=UTF8"`
-	Dist03 string `parquet:"name=s_dist_03, type=UTF8"`
-	Dist04 string `parquet:"name=s_dist_04, type=UTF8"`
-	Dist05 string `parquet:"name=s_dist_05, type=UTF8"`
-	Dist06 string `parquet:"name=s_dist_06, type=UTF8"`
-	Dist07 string `parquet:"name=s_dist_07, type=UTF8"`
-	Dist08 string `parquet:"name=s_dist_08, type=UTF8"`
-	Dist09 string `parquet:"name=s_dist_09, type=UTF8"`
-	Dist10 string `parquet:"name=s_dist_10, type=UTF8"`
-	Ytd int32 `parquet:"name=s_ytd, type=INT32"`
-	OrderCnt int32 `parquet:"name=s_order_cnt, type=INT32"`
-	RemoteCnt int32 `parquet:"name=s_remote_cnt, type=INT32"`
-	Data string `parquet:"name=s_data, type=UTF8"`
+	IId       int32  `parquet:"name=s_i_id, type=INT32"`
+	WId       int32  `parquet:"name=s_w_id, type=INT32"`
+	Quantity  int32  `parquet:"name=s_quantity, type=INT32"`
+	Dist01    string `parquet:"name=s_dist_01, type=UTF8"`
+	Dist02    string `parquet:"name=s_dist_02, type=UTF8"`
+	Dist03    string `parquet:"name=s_dist_03, type=UTF8"`
+	Dist04    string `parquet:"name=s_dist_04, type=UTF8"`
+	Dist05    string `parquet:"name=s_dist_05, type=UTF8"`
+	Dist06    string `parquet:"name=s_dist_06, type=UTF8"`
+	Dist07    string `parquet:"name=s_dist_07, type=UTF8"`
+	Dist08    string `parquet:"name=s_dist_08, type=UTF8"`
+	Dist09    string `parquet:"name=s_dist_09, type=UTF8"`
+	Dist10    string `parquet:"name=s_dist_10, type=UTF8"`
+	Ytd       int32  `parquet:"name=s_ytd, type=INT32"`
+	OrderCnt  int32  `parquet:"name=s_order_cnt, type=INT32"`
+	RemoteCnt int32  `parquet:"name=s_remote_cnt, type=INT32"`
+	Data      string `parquet:"name=s_data, type=UTF8"`
 }
 
 func (c *ParquetWorkLoader) loadStock(ctx context.Context, warehouse int) error {
@@ -314,17 +313,17 @@ func (c *ParquetWorkLoader) loadStock(ctx context.Context, warehouse int) error 
 }
 
 type District struct {
-	Id int32 `parquet:"name=d_id, type=INT32"`
-	WId int32 `parquet:"name=d_w_id, type=INT32"`
-	Name string `parquet:"name=d_name, type=UTF8"`
+	Id      int32  `parquet:"name=d_id, type=INT32"`
+	WId     int32  `parquet:"name=d_w_id, type=INT32"`
+	Name    string `parquet:"name=d_name, type=UTF8"`
 	Street1 string `parquet:"name=d_street_1, type=UTF8"`
 	Street2 string `parquet:"name=d_street_2, type=UTF8"`
-	City string `parquet:"name=d_city, type=UTF8"`
-	State string `parquet:"name=d_state, type=UTF8"`
-	Zip string `parquet:"name=d_zip, type=UTF8"`
-	Tax string `parquet:"name=d_tax, type=DECIMAL, scale=4, precision=4, basetype=BYTE_ARRAY"`
-	Ytd string `parquet:"name=d_ytd, type=DECIMAL, scale=4, precision=12, basetype=BYTE_ARRAY"`
-	NextOId int32 `parquet:"name=d_next_o_id, type=INT32"`
+	City    string `parquet:"name=d_city, type=UTF8"`
+	State   string `parquet:"name=d_state, type=UTF8"`
+	Zip     string `parquet:"name=d_zip, type=UTF8"`
+	Tax     string `parquet:"name=d_tax, type=DECIMAL, scale=4, precision=4, basetype=BYTE_ARRAY"`
+	Ytd     string `parquet:"name=d_ytd, type=DECIMAL, scale=4, precision=12, basetype=BYTE_ARRAY"`
+	NextOId int32  `parquet:"name=d_next_o_id, type=INT32"`
 }
 
 func (c *ParquetWorkLoader) loadDistrict(ctx context.Context, warehouse int) error {
@@ -363,27 +362,27 @@ func (c *ParquetWorkLoader) loadDistrict(ctx context.Context, warehouse int) err
 }
 
 type Customer struct {
-	Id int32 `parquet:"name=c_id, type=INT32"`
-	DId int32 `parquet:"name=c_d_id, type=INT32"`
-	WId int32 `parquet:"name=c_w_id, type=INT32"`
-	First string `parquet:"name=c_first, type=UTF8, encoding=PLAIN"`
-	Middle string `parquet:"name=c_middle, type=UTF8, encoding=PLAIN"`
-	Last string `parquet:"name=c_last, type=UTF8, encoding=PLAIN"`
-	Street1 string `parquet:"name=c_street_1, type=UTF8, encoding=PLAIN"`
-	Street2 string `parquet:"name=c_street_2, type=UTF8, encoding=PLAIN"`
-	City string `parquet:"name=c_city, type=UTF8, encoding=PLAIN"`
-	State string `parquet:"name=c_state, type=UTF8, encoding=PLAIN"`
-	Zip string `parquet:"name=c_zip, type=UTF8, encoding=PLAIN"`
-	Phone string `parquet:"name=c_phone, type=UTF8, encoding=PLAIN"`
-	Since int64 `parquet:"name=c_since, type=TIMESTAMP_MICROS"`
-	Credit string `parquet:"name=c_credit, type=UTF8, encoding=PLAIN"`
-	CreditLim int64 `parquet:"name=c_credit_lim, type=INT64"`
-	Discount string `parquet:"name=c_discount, type=UTF8, encoding=PLAIN"`
-	Balance int64 `parquet:"name=c_balance, type=INT64"`
-	YtdPayment int64 `parquet:"name=c_ytd_payment, type=INT64"`
-	PaymentCnt int32 `parquet:"name=c_payment_cnt, type=INT64"`
-	DeliveryCnt int32 `parquet:"name=c_delivery_cnt, type=INT32"`
-	Data string `parquet:"name=c_data, type=UTF8, encoding=PLAIN"`
+	Id          int32  `parquet:"name=c_id, type=INT32"`
+	DId         int32  `parquet:"name=c_d_id, type=INT32"`
+	WId         int32  `parquet:"name=c_w_id, type=INT32"`
+	First       string `parquet:"name=c_first, type=UTF8, encoding=PLAIN"`
+	Middle      string `parquet:"name=c_middle, type=UTF8, encoding=PLAIN"`
+	Last        string `parquet:"name=c_last, type=UTF8, encoding=PLAIN"`
+	Street1     string `parquet:"name=c_street_1, type=UTF8, encoding=PLAIN"`
+	Street2     string `parquet:"name=c_street_2, type=UTF8, encoding=PLAIN"`
+	City        string `parquet:"name=c_city, type=UTF8, encoding=PLAIN"`
+	State       string `parquet:"name=c_state, type=UTF8, encoding=PLAIN"`
+	Zip         string `parquet:"name=c_zip, type=UTF8, encoding=PLAIN"`
+	Phone       string `parquet:"name=c_phone, type=UTF8, encoding=PLAIN"`
+	Since       int64  `parquet:"name=c_since, type=TIMESTAMP_MICROS"`
+	Credit      string `parquet:"name=c_credit, type=UTF8, encoding=PLAIN"`
+	CreditLim   int64  `parquet:"name=c_credit_lim, type=INT64"`
+	Discount    string `parquet:"name=c_discount, type=UTF8, encoding=PLAIN"`
+	Balance     int64  `parquet:"name=c_balance, type=INT64"`
+	YtdPayment  int64  `parquet:"name=c_ytd_payment, type=INT64"`
+	PaymentCnt  int32  `parquet:"name=c_payment_cnt, type=INT64"`
+	DeliveryCnt int32  `parquet:"name=c_delivery_cnt, type=INT32"`
+	Data        string `parquet:"name=c_data, type=UTF8, encoding=PLAIN"`
 }
 
 func (c *ParquetWorkLoader) loadCustomer(ctx context.Context, warehouse int, district int) error {
@@ -428,7 +427,7 @@ func (c *ParquetWorkLoader) loadCustomer(ctx context.Context, warehouse int, dis
 		cDeliveryCnt := 0
 		cData := randChars(s.R, s.Buf, 300, 500)
 
-		v := &Customer{int32(cID), int32(cDID), int32(cWID),cFirst, cMiddle, cLast, cStreet1, cStreet2, cCity, cState,
+		v := &Customer{int32(cID), int32(cDID), int32(cWID), cFirst, cMiddle, cLast, cStreet1, cStreet2, cCity, cState,
 			cZip, cPhone, cSince, cCredit, int64(cCreditLim), fmt.Sprintf("%f", cDisCount),
 			int64(cBalance), int64(cYtdPayment), int32(cPaymentCnt), int32(cDeliveryCnt), cData}
 
@@ -441,14 +440,14 @@ func (c *ParquetWorkLoader) loadCustomer(ctx context.Context, warehouse int, dis
 }
 
 type History struct {
-	CId int32 `parquet:"name=h_c_id, type=INT32"`
-	CDId int32 `parquet:"name=h_c_d_id, type=INT32"`
-	CWId int32 `parquet:"name=h_c_w_id, type=INT32"`
-	DID int32 `parquet:"name=h_d_id, type=INT32"`
-	WID int32 `parquet:"name=h_w_id, type=INT32"`
-	Date int64 `parquet:"name=h_date, type=TIMESTAMP_MICROS"`
-	Amount int32 `parquet:"name=h_amount, type=INT32"`
-	Data string `parquet:"name=h_data, type=UTF8"`
+	CId    int32  `parquet:"name=h_c_id, type=INT32"`
+	CDId   int32  `parquet:"name=h_c_d_id, type=INT32"`
+	CWId   int32  `parquet:"name=h_c_w_id, type=INT32"`
+	DID    int32  `parquet:"name=h_d_id, type=INT32"`
+	WID    int32  `parquet:"name=h_w_id, type=INT32"`
+	Date   int64  `parquet:"name=h_date, type=TIMESTAMP_MICROS"`
+	Amount int32  `parquet:"name=h_amount, type=INT32"`
+	Data   string `parquet:"name=h_data, type=UTF8"`
 }
 
 func (c *ParquetWorkLoader) loadHistory(ctx context.Context, warehouse int, district int) error {
@@ -485,14 +484,14 @@ func (c *ParquetWorkLoader) loadHistory(ctx context.Context, warehouse int, dist
 }
 
 type Orders struct {
-	Id int32 `parquet:"name=o_id, type=INT32"`
-	DId int32 `parquet:"name=o_d_id, type=INT32"`
-	WId int32 `parquet:"name=o_w_id, type=INT32"`
-	CId int32 `parquet:"name=o_c_id, type=INT32"`
-	EntryD int64 `parquet:"name=o_entry_d, type=TIMESTAMP_MICROS"`
+	Id        int32 `parquet:"name=o_id, type=INT32"`
+	DId       int32 `parquet:"name=o_d_id, type=INT32"`
+	WId       int32 `parquet:"name=o_w_id, type=INT32"`
+	CId       int32 `parquet:"name=o_c_id, type=INT32"`
+	EntryD    int64 `parquet:"name=o_entry_d, type=TIMESTAMP_MICROS"`
 	CarrierId int32 `parquet:"name=o_carrier_id, type=INT32"`
-	OlCnt int32 `parquet:"name=o_ol_cnt, type=INT32"`
-	AllLocal int32 `parquet:"name=o_all_local, type=INT32"`
+	OlCnt     int32 `parquet:"name=o_ol_cnt, type=INT32"`
+	AllLocal  int32 `parquet:"name=o_all_local, type=INT32"`
 }
 
 func (c *ParquetWorkLoader) loadOrder(ctx context.Context, warehouse int, district int) ([]int, error) {
@@ -535,7 +534,7 @@ func (c *ParquetWorkLoader) loadOrder(ctx context.Context, warehouse int, distri
 type NewOrder struct {
 	Oid int32 `parquet:"name=no_o_id, type=INT32"`
 	Did int32 `parquet:"name=no_d_id, type=INT32"`
-	Wid int32  `parquet:"name=no_w_id, type=INT32"`
+	Wid int32 `parquet:"name=no_w_id, type=INT32"`
 }
 
 func (c *ParquetWorkLoader) loadNewOrder(ctx context.Context, warehouse int, district int) error {
@@ -565,16 +564,16 @@ func (c *ParquetWorkLoader) loadNewOrder(ctx context.Context, warehouse int, dis
 }
 
 type OrderLine struct {
-	Oid int32 `parquet:"name=ol_o_id, type=INT32"`
-	Did int32 `parquet:"name=ol_d_id, type=INT32"`
-	Wid int32  `parquet:"name=ol_w_id, type=INT32"`
-	Number int32 `parquet:"name=ol_number, type=INT32"`
-	Iid int32 `parquet:"name=ol_i_id, type=INT32"`
-	SupplyWId int32 `parquet:"name=ol_supply_w_id, type=INT32"`
-	DeliveryD int64 `parquet:"name=ol_delivery_d, type=TIMESTAMP_MICROS"`
-	Quantity int32 `parquet:"name=ol_quantity, type=INT32"`
-	Amount string `parquet:"name=ol_amount, type=UTF8"`
-	DistInfo string `parquet:"name=ol_dist_info, type=UTF8"`
+	Oid       int32  `parquet:"name=ol_o_id, type=INT32"`
+	Did       int32  `parquet:"name=ol_d_id, type=INT32"`
+	Wid       int32  `parquet:"name=ol_w_id, type=INT32"`
+	Number    int32  `parquet:"name=ol_number, type=INT32"`
+	Iid       int32  `parquet:"name=ol_i_id, type=INT32"`
+	SupplyWId int32  `parquet:"name=ol_supply_w_id, type=INT32"`
+	DeliveryD int64  `parquet:"name=ol_delivery_d, type=TIMESTAMP_MICROS"`
+	Quantity  int32  `parquet:"name=ol_quantity, type=INT32"`
+	Amount    string `parquet:"name=ol_amount, type=UTF8"`
+	DistInfo  string `parquet:"name=ol_dist_info, type=UTF8"`
 }
 
 func (c *ParquetWorkLoader) loadOrderLine(ctx context.Context, warehouse int,

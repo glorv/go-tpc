@@ -5,11 +5,11 @@ package load
 // license that can be found in the LICENSE file.
 
 import (
-"bufio"
-"io"
-"strings"
-"unicode"
-"unicode/utf8"
+	"bufio"
+	"io"
+	"strings"
+	"unicode"
+	"unicode/utf8"
 )
 
 // A Writer writes records using CSV encoding.
@@ -29,7 +29,7 @@ import (
 // be checked by calling the Error method.
 type Writer struct {
 	Comma   string // Field delimiter (set to ',' by NewWriter)
-	UseCRLF bool // True to use \r\n as the line terminator
+	UseCRLF bool   // True to use \r\n as the line terminator
 	w       *bufio.Writer
 }
 

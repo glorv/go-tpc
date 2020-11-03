@@ -107,28 +107,28 @@ func (b *CSVBatchLoader) Close(ctx context.Context) error {
 }
 
 type ParquetBatchLoader struct {
-	f source.ParquetFile
-	w *writer.ParquetWriter
-	name string
+	f      source.ParquetFile
+	w      *writer.ParquetWriter
+	name   string
 	closed bool
 }
 
 func NewParquetBatchLoader(path string, o interface{}, name string) (BatchLoader, error) {
 	f, err := local.NewLocalFileWriter(path)
-	w, err :=  writer.NewParquetWriter(f, o, 4)
+	w, err := writer.NewParquetWriter(f, o, 4)
 	if err != nil {
 		return nil, err
 	}
 
 	return &ParquetBatchLoader{
-		f: f,
-		w:w,
+		f:    f,
+		w:    w,
 		name: name,
 	}, nil
 }
 
 func (b *ParquetBatchLoader) Name() string {
-	return fmt.Sprintf("paquet-%s",b.name)
+	return fmt.Sprintf("paquet-%s", b.name)
 }
 
 // InsertValue inserts a value, the loader may flush all pending values.
