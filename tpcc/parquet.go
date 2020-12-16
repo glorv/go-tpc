@@ -199,9 +199,8 @@ func (c *ParquetWorkLoader) loadItem(ctx context.Context) error {
 	s := getTPCCState(ctx)
 	l := s.loaders[tableItem]
 
+	s.Buf.Reset()
 	for i := 0; i < maxItems; i++ {
-		s.Buf.Reset()
-
 		iImID := randInt(s.R, 1, 10000)
 		iPrice := int32(randInt(s.R, 100, 10000))
 		iName := randChars(s.R, s.Buf, 14, 24)
@@ -280,9 +279,8 @@ func (c *ParquetWorkLoader) loadStock(ctx context.Context, warehouse int) error 
 	s := getTPCCState(ctx)
 	l := s.loaders[tableStock]
 
+	s.Buf.Reset()
 	for i := 0; i < stockPerWarehouse; i++ {
-		s.Buf.Reset()
-
 		sIID := i + 1
 		sWID := warehouse
 		sQuantity := randInt(s.R, 10, 100)
@@ -308,8 +306,7 @@ func (c *ParquetWorkLoader) loadStock(ctx context.Context, warehouse int) error 
 			return err
 		}
 	}
-	return nil
-	//return l.Flush(ctx)
+	return l.Flush(ctx)
 }
 
 type District struct {
@@ -336,8 +333,6 @@ func (c *ParquetWorkLoader) loadDistrict(ctx context.Context, warehouse int) err
 	l := s.loaders[tableDistrict]
 
 	for i := 0; i < districtPerWarehouse; i++ {
-		s.Buf.Reset()
-
 		dID := i + 1
 		dWID := warehouse
 		dName := randChars(s.R, s.Buf, 6, 10)
@@ -356,6 +351,13 @@ func (c *ParquetWorkLoader) loadDistrict(ctx context.Context, warehouse int) err
 		if err := l.InsertValue(ctx, v); err != nil {
 			return err
 		}
+	}
+
+	// flush is bigger than 1M
+	if s.Buf.Size() > 1<<20 {
+		res := l.Flush(ctx)
+		s.Buf.Reset()
+		return res
 	}
 	return nil
 	//return l.Flush(ctx)
@@ -393,10 +395,8 @@ func (c *ParquetWorkLoader) loadCustomer(ctx context.Context, warehouse int, dis
 
 	s := getTPCCState(ctx)
 	l := s.loaders[tableCustomer]
-
+	s.Buf.Reset()
 	for i := 0; i < customerPerDistrict; i++ {
-		s.Buf.Reset()
-
 		cID := i + 1
 		cDID := district
 		cWID := warehouse
@@ -435,8 +435,7 @@ func (c *ParquetWorkLoader) loadCustomer(ctx context.Context, warehouse int, dis
 			return err
 		}
 	}
-	return nil
-	//return l.Flush(ctx)
+	return l.Flush(ctx)
 }
 
 type History struct {
@@ -460,9 +459,8 @@ func (c *ParquetWorkLoader) loadHistory(ctx context.Context, warehouse int, dist
 	l := s.loaders[tableHistory]
 
 	// 1 customer has 1 row
+	s.Buf.Reset()
 	for i := 0; i < customerPerDistrict; i++ {
-		s.Buf.Reset()
-
 		hCID := i + 1
 		hCDID := district
 		hCWID := warehouse
@@ -479,8 +477,7 @@ func (c *ParquetWorkLoader) loadHistory(ctx context.Context, warehouse int, dist
 			return err
 		}
 	}
-	return nil
-	//return l.Flush(ctx)
+	return l.Flush(ctx)
 }
 
 type Orders struct {
@@ -508,8 +505,8 @@ func (c *ParquetWorkLoader) loadOrder(ctx context.Context, warehouse int, distri
 		cids[i], cids[j] = cids[j], cids[i]
 	})
 	olCnts := make([]int, orderPerDistrict)
+	s.Buf.Reset()
 	for i := 0; i < orderPerDistrict; i++ {
-		s.Buf.Reset()
 
 		oID := i + 1
 		oCID := cids[i] + 1
@@ -527,8 +524,8 @@ func (c *ParquetWorkLoader) loadOrder(ctx context.Context, warehouse int, distri
 		}
 	}
 
-	return olCnts, nil
-	//return olCnts, l.Flush(ctx)
+	//return olCnts, nil
+	return olCnts, l.Flush(ctx)
 }
 
 type NewOrder struct {
@@ -547,8 +544,8 @@ func (c *ParquetWorkLoader) loadNewOrder(ctx context.Context, warehouse int, dis
 
 	l := s.loaders[tableNewOrder]
 
+	s.Buf.Reset()
 	for i := 0; i < newOrderPerDistrict; i++ {
-		s.Buf.Reset()
 
 		noOID := 2101 + i
 		noDID := district
@@ -559,8 +556,7 @@ func (c *ParquetWorkLoader) loadNewOrder(ctx context.Context, warehouse int, dis
 			return err
 		}
 	}
-	return nil
-	//return l.Flush(ctx)
+	return l.Flush(ctx)
 }
 
 type OrderLine struct {
@@ -587,10 +583,9 @@ func (c *ParquetWorkLoader) loadOrderLine(ctx context.Context, warehouse int,
 
 	l := s.loaders[tableOrderLine]
 
+	s.Buf.Reset()
 	for i := 0; i < orderPerDistrict; i++ {
 		for j := 0; j < olCnts[i]; j++ {
-			s.Buf.Reset()
-
 			olOID := i + 1
 			olDID := district
 			olWID := warehouse
@@ -616,6 +611,5 @@ func (c *ParquetWorkLoader) loadOrderLine(ctx context.Context, warehouse int,
 			}
 		}
 	}
-	return nil
-	//return l.Flush(ctx)
+	return l.Flush(ctx)
 }

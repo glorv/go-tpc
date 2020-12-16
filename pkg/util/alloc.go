@@ -47,3 +47,7 @@ func (b *BufAllocator) Alloc(n int) []byte {
 func (b *BufAllocator) Reset() {
 	b.offset = 0
 }
+
+func (b *BufAllocator) Size() int {
+	return b.offset
+}
